@@ -70,7 +70,7 @@ def kill_steam():
                 except (os.Error):
                     print ('Cannot kill the Steam process. Please restart Steam manually')
         except (psutil.AccessDenied):
-
+            print 'Potato'
    # try:
     #     os.system("taskkill /im"+STEAM_PROC_NAME+"/f")
     # except: (os.Error)

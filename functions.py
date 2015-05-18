@@ -7,11 +7,12 @@ import win32security
 import urllib
 import zipfile
 import getpass
+import time
 
 from _winreg import *
 
 
-SKIN_PATH = os.getenv('APPDATA')
+#SKIN_PATH_XP = os.getenv('APPDATA')
 STEAM_PROC_NAME = "Steam.exe"
 
 # Create a skin object with @skin_url and @skin_name
@@ -27,19 +28,26 @@ class skin:
 
 #Download the skin @skin_array
 def download_skin(skins_array,skin_id):
+
     if skin_id == 1:
         index = 0
     if skin_id == 2:
         index = 1
     if skin_id == 3:
-        index = 3
+        index = 2
+
+    if find_steam_path() == 'w7':
+        SKIN_PATH = "C:\\Program Files (x86)\\Steam\\skins"
+
+    if find_steam_path() == 'xp':
+        SKIN_PATH = "C:\\Program Files\\Steam\skins"
 
     print "Downloading Skin " + skins_array[index].skin_name
     urllib.urlretrieve(skins_array[index].skin_url, skins_array[index].skin_name)
     with zipfile.ZipFile(skins_array[index].skin_name, "r") as skin_archive:
-        if not os.path.exists(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skins_array[index].skin_name):
-            os.makedirs(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skins_array[index].skin_name)
-            skin_archive.extractall(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skins_array[index].skin_name)
+        if not os.path.exists(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name):
+            os.makedirs(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
+            skin_archive.extractall(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
 
     # for skin in skins_array:
     #     print "Downloading Skin " + skin.skin_name
@@ -62,8 +70,17 @@ def find_steam_path():
     if os.path.exists(xp_path):
         win_ver = 'xp'
 
+    return win_ver
 
-def edit_selected_skin():
+def edit_selected_skin(skins_array, skin_id):
+
+    if skin_id == 1:
+        index = 0
+    if skin_id == 2:
+        index = 1
+    if skin_id == 3:
+        index = 2
+
 
     user_name = getpass.getuser()
     sid = win32security.LookupAccountName(None, user_name)[0]
@@ -72,7 +89,7 @@ def edit_selected_skin():
     connectRegistry = ConnectRegistry(None, HKEY_USERS)
     skin_key = OpenKey(connectRegistry, sidstr + "\Software\Valve\Steam", 0, KEY_WRITE)
     try:
-        SetValueEx(skin_key, 'SkinV4', 0, REG_SZ, "air")
+        SetValueEx(skin_key, 'SkinV4', 0, REG_SZ, skins_array[index].skin_name)
     except EnvironmentError:
         print "Cannot change Registry key"
 
@@ -80,8 +97,9 @@ def edit_selected_skin():
     CloseKey(skin_key)
 
 
-def kill_steam():
+def kill_steam_restart():
 
+    time.sleep(2)
     for process in psutil.process_iter():
         try:
             if process.name() == STEAM_PROC_NAME:
@@ -91,6 +109,8 @@ def kill_steam():
                     print ('Cannot kill the Steam process. Please restart Steam manually')
         except (psutil.AccessDenied):
             print ('Cannot access process information')
+
+    os.system('"C:\\Program Files (x86)\\Steam\\Steam.exe"')
 
 
 def create_skin_objets():
@@ -102,8 +122,11 @@ def create_skin_objets():
     global skin_list
 
     skin_list = []
-    steamCompact = skin("http://sss.coldnorthadmin.com/skins/compact/SteamCompact_1.5.27.zip", "compact", "compact.zip")
+    #0
+    steamCompact = skin("http://sss.coldnorthadmin.com/skins/compact/compact.zip", "compact", "compact.zip")
+    #1
     steamEnhanced = skin("http://sss.coldnorthadmin.com/skins/enhanced/enhanced.zip", "enhanced", "enhanced.zip")
+    #2
     steamAir = skin("http://sss.coldnorthadmin.com/skins/air/air.zip", "air", "air.zip")
 
     skin_list.append(steamCompact)
@@ -117,7 +140,7 @@ def prompt_skin_choice():
 
     while True:
         try:
-            print("1: Steam Air\n2: Steam Enhanced\n3: Steam Metro")
+            print("1: Steam Compact\n2: Steam Enhanced\n3: Steam Air")
             skin_id = int(raw_input("Please enter the skin number : "))
         except ValueError:
             print "Your selection is invalid"
@@ -133,7 +156,12 @@ def prompt_skin_choice():
 def main():
 
     create_skin_objets()
+    find_steam_path()
     prompt_skin_choice()
-    download_skin(skin_list,skin_id)
+    download_skin(skin_list, skin_id)
+    edit_selected_skin(skin_list, skin_id)
+
+    kill_steam_restart()
+
 #MAIN PROCESS
 main()

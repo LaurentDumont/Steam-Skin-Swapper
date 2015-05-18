@@ -8,7 +8,7 @@ import urllib
 import zipfile
 import getpass
 import time
-
+from Tkinter import *
 from _winreg import *
 
 
@@ -137,31 +137,53 @@ def create_skin_objets():
 def prompt_skin_choice():
 
     global skin_id
+    skin_id = StringVar()
 
-    while True:
-        try:
-            print("1: Steam Compact\n2: Steam Enhanced\n3: Steam Air")
-            skin_id = int(raw_input("Please enter the skin number : "))
-        except ValueError:
-            print "Your selection is invalid"
-            continue
-        else:
-            print("Downloading skin ID : %s") % skin_id
-            break
+    try:
+        skin_id = int(skin_id.get())
+    except ValueError:
+        pass
 
-    return skin_id
+    # while True:
+    #     try:
+    #         print("1: Steam Compact\n2: Steam Enhanced\n3: Steam Air")
+    #         skin_id = int(raw_input("Please enter the skin number : "))
+    #     except ValueError:
+    #         print "Your selection is invalid"
+    #         continue
+    #     else:
+    #         print("Downloading skin ID : %s") % skin_id
+    #         break
+    #
+    # return skin_id
 
+def gui():
+    main_window_root = Tk()
+    main_window_root.title("Steam Skin Swapper - Laurent Dumont")
+
+    main_window = Frame(main_window_root, )
+    main_window.grid(column=0, row=0, sticky=(N, W, E, S))
+    main_window.columnconfigure(0, weight=1)
+    main_window.rowconfigure(0, weight=1)
+
+    id_entry = Entry(main_window, width=7, textvariable="Steam skin ID")
+    id_entry.grid(column=2, row=1, sticky=(W, E))
+    Button(main_window, text="Select Skin", command=prompt_skin_choice) .grid(column=3, row=3, sticky=W)
+    
+    main_window.mainloop()
+    
+    
 
 #Main function
 def main():
+    gui()
 
-    create_skin_objets()
-    find_steam_path()
-    prompt_skin_choice()
-    download_skin(skin_list, skin_id)
-    edit_selected_skin(skin_list, skin_id)
-
-    kill_steam_restart()
+    # create_skin_objets()
+    # find_steam_path()
+    # prompt_skin_choice()
+    # download_skin(skin_list, skin_id)
+    # edit_selected_skin(skin_list, skin_id)
+    # kill_steam_restart()
 
 #MAIN PROCESS
 main()

@@ -27,15 +27,27 @@ class skin:
 
 #Download the skin @skin_array
 def download_skin(skins_array,skin_id):
+    if skin_id == 1:
+        index = 0
+    if skin_id == 2:
+        index = 1
+    if skin_id == 3:
+        index = 3
 
-    for skin in skins_array:
-        print "Downloading Skin " + skin.skin_name
-        urllib.urlretrieve(skin.skin_url, skin.skin_name)
+    print "Downloading Skin " + skins_array[index].skin_name
+    urllib.urlretrieve(skins_array[index].skin_url, skins_array[index].skin_name)
+    with zipfile.ZipFile(skins_array[index].skin_name, "r") as skin_archive:
+        if not os.path.exists(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skins_array[index].skin_name):
+            os.makedirs(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skins_array[index].skin_name)
+            skin_archive.extractall(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skins_array[index].skin_name)
 
-        with zipfile.ZipFile(skin.skin_name, "r") as skin_archive:
-            if not os.path.exists(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name):
-                os.makedirs(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
-            skin_archive.extractall(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
+    # for skin in skins_array:
+    #     print "Downloading Skin " + skin.skin_name
+    #     urllib.urlretrieve(skin.skin_url, skin.skin_name)
+    #     with zipfile.ZipFile(skin.skin_name, "r") as skin_archive:
+    #         if not os.path.exists(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name):
+    #             os.makedirs(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
+    #         skin_archive.extractall(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
 
 
 def find_steam_path():
@@ -93,27 +105,35 @@ def create_skin_objets():
     steamCompact = skin("http://sss.coldnorthadmin.com/skins/compact/SteamCompact_1.5.27.zip", "compact", "compact.zip")
     steamEnhanced = skin("http://sss.coldnorthadmin.com/skins/enhanced/enhanced.zip", "enhanced", "enhanced.zip")
     steamAir = skin("http://sss.coldnorthadmin.com/skins/air/air.zip", "air", "air.zip")
-    skin_list.append(steamEnhanced)
+
     skin_list.append(steamCompact)
+    skin_list.append(steamEnhanced)
     skin_list.append(steamAir)
 
 
-def prompt_skin_choice(skins_array):
+def prompt_skin_choice():
 
-    for skin in skins_array:
-        print "%s" % skin.skin_name
+    global skin_id
 
-    try:
-        skin_id = int(raw_input("Please enter the skin number"))
-    except ValueError:
-        print "Please select a correct skin number"
+    while True:
+        try:
+            print("1: Steam Air\n2: Steam Enhanced\n3: Steam Metro")
+            skin_id = int(raw_input("Please enter the skin number : "))
+        except ValueError:
+            print "Your selection is invalid"
+            continue
+        else:
+            print("Downloading skin ID : %s") % skin_id
+            break
+
+    return skin_id
+
 
 #Main function
 def main():
 
     create_skin_objets()
-    #download_skin(skin_list)
-    prompt_skin_choice(skin_list)
-
+    prompt_skin_choice()
+    download_skin(skin_list,skin_id)
 #MAIN PROCESS
 main()

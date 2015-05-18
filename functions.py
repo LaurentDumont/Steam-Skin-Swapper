@@ -1,4 +1,5 @@
 __author__ = 'Laurent Dumont'
+__name__ = 'Steam Skin Swapper'
 
 import os
 import psutil
@@ -14,7 +15,10 @@ SKIN_PATH = os.getenv('APPDATA')
 STEAM_PROC_NAME = "Steam.exe"
 
 # Create a skin object with @skin_url and @skin_name
+
+
 class skin:
+
     def __init__(self, skin_url, skin_name, skin_archive_name):
         self.skin_url = skin_url
         self.skin_name = skin_name
@@ -22,7 +26,8 @@ class skin:
 
 
 #Download the skin @skin_array
-def download_skin(skins_array):
+def download_skin(skins_array,skin_id):
+
     for skin in skins_array:
         print "Downloading Skin " + skin.skin_name
         urllib.urlretrieve(skin.skin_url, skin.skin_name)
@@ -34,6 +39,7 @@ def download_skin(skins_array):
 
 
 def find_steam_path():
+
     w7_path = "C:\\Program Files (x86)\\Steam\\skins"
     xp_path = "C:\\Program Files\\Steam\skins"
     global win_ver
@@ -46,6 +52,7 @@ def find_steam_path():
 
 
 def edit_selected_skin():
+
     user_name = getpass.getuser()
     sid = win32security.LookupAccountName(None, user_name)[0]
     sidstr = win32security.ConvertSidToStringSid(sid)
@@ -62,6 +69,7 @@ def edit_selected_skin():
 
 
 def kill_steam():
+
     for process in psutil.process_iter():
         try:
             if process.name() == STEAM_PROC_NAME:
@@ -74,17 +82,38 @@ def kill_steam():
 
 
 def create_skin_objets():
+
+    #Create the global variables containing the skins.
     global steamCompact
     global steamEnhanced
     global steamAir
+    global skin_list
+
+    skin_list = []
     steamCompact = skin("http://sss.coldnorthadmin.com/skins/compact/SteamCompact_1.5.27.zip", "compact", "compact.zip")
     steamEnhanced = skin("http://sss.coldnorthadmin.com/skins/enhanced/enhanced.zip", "enhanced", "enhanced.zip")
-    steamAir = skin("http://sss.coldnorthadmin.com/skins/enhanced/air.zip", "air", "air.zip")
+    steamAir = skin("http://sss.coldnorthadmin.com/skins/air/air.zip", "air", "air.zip")
+    skin_list.append(steamEnhanced)
+    skin_list.append(steamCompact)
+    skin_list.append(steamAir)
 
 
+def prompt_skin_choice(skins_array):
+
+    for skin in skins_array:
+        print "%s" % skin.skin_name
+
+    try:
+        skin_id = int(raw_input("Please enter the skin number"))
+    except ValueError:
+        print "Please select a correct skin number"
+
+#Main function
 def main():
-    edit_selected_skin()
-    kill_steam()
 
+    create_skin_objets()
+    #download_skin(skin_list)
+    prompt_skin_choice(skin_list)
 
+#MAIN PROCESS
 main()

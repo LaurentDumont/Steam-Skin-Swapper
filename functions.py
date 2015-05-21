@@ -57,7 +57,7 @@ def download_skin(skins_array,skin_id):
     #             os.makedirs(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
     #         skin_archive.extractall(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
 
-
+#Find the Steam folder path depending on the version of Windows.
 def find_steam_path():
 
     w7_path = "C:\\Program Files (x86)\\Steam\\skins"
@@ -72,6 +72,7 @@ def find_steam_path():
 
     return win_ver
 
+#
 def edit_selected_skin(skins_array, skin_id):
 
     if skin_id == 1:
@@ -157,33 +158,15 @@ def prompt_skin_choice():
     #
     # return skin_id
 
-def gui():
-    main_window_root = Tk()
-    main_window_root.title("Steam Skin Swapper - Laurent Dumont")
-
-    main_window = Frame(main_window_root, )
-    main_window.grid(column=0, row=0, sticky=(N, W, E, S))
-    main_window.columnconfigure(0, weight=1)
-    main_window.rowconfigure(0, weight=1)
-
-    id_entry = Entry(main_window, width=7, textvariable="Steam skin ID")
-    id_entry.grid(column=2, row=1, sticky=(W, E))
-    Button(main_window, text="Select Skin", command=prompt_skin_choice) .grid(column=3, row=3, sticky=W)
-    
-    main_window.mainloop()
-    
-    
-
 #Main function
 def main():
-    gui()
 
-    # create_skin_objets()
-    # find_steam_path()
-    # prompt_skin_choice()
-    # download_skin(skin_list, skin_id)
-    # edit_selected_skin(skin_list, skin_id)
-    # kill_steam_restart()
+     create_skin_objets()
+     find_steam_path()
+     prompt_skin_choice()
+     download_skin(skin_list, skin_id)
+     edit_selected_skin(skin_list, skin_id)
+     kill_steam_restart()
 
 #MAIN PROCESS
 main()

@@ -8,7 +8,7 @@ import urllib
 import zipfile
 import getpass
 import time
-from Tkinter import *
+import subprocess
 from _winreg import *
 
 
@@ -16,8 +16,6 @@ from _winreg import *
 STEAM_PROC_NAME = "Steam.exe"
 
 # Create a skin object with @skin_url and @skin_name
-
-
 class skin:
 
     def __init__(self, skin_url, skin_name, skin_archive_name):
@@ -42,7 +40,7 @@ def download_skin(skins_array,skin_id):
     if find_steam_path() == 'xp':
         SKIN_PATH = "C:\\Program Files\\Steam\skins"
 
-    print "Downloading Skin " + skins_array[index].skin_name
+    print "Downloading Skin : " + skins_array[index].skin_name
     urllib.urlretrieve(skins_array[index].skin_url, skins_array[index].skin_name)
     with zipfile.ZipFile(skins_array[index].skin_name, "r") as skin_archive:
         if not os.path.exists(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name):
@@ -100,18 +98,30 @@ def edit_selected_skin(skins_array, skin_id):
 
 def kill_steam_restart():
 
-    time.sleep(2)
+
     for process in psutil.process_iter():
         try:
             if process.name() == STEAM_PROC_NAME:
                 try:
+                    print "Killing the Steam process %s" % str(process.name())
+                    print "... Please Wait ... ||| Starting the Steam process ||| ... Please Wait ..."
                     process.kill()
-                except (os.Error):
+                    time.sleep(2)
+                    steam_path = r'"C:\Program Files (x86)\Steam\Steam.exe"'
+                    subprocess.Popen(steam_path)
+                    exit(1)
+                except (psutil.Error):
                     print ('Cannot kill the Steam process. Please restart Steam manually')
         except (psutil.AccessDenied):
-            print ('Cannot access process information')
+            pass
+        else:
+            continue
 
-    os.system('"C:\\Program Files (x86)\\Steam\\Steam.exe"')
+    print "WARNING | Steam process is not running | WARNING"
+    print "INFO | Starting Steam process| INFO"
+    steam_path = r'"C:\Program Files (x86)\Steam\Steam.exe"'
+    subprocess.Popen(steam_path)
+    exit(1)
 
 
 def create_skin_objets():
@@ -138,28 +148,22 @@ def create_skin_objets():
 def prompt_skin_choice():
 
     global skin_id
-    skin_id = StringVar()
 
-    try:
-        skin_id = int(skin_id.get())
-    except ValueError:
-        pass
+    while True:
+        try:
+            print("1: Steam Compact\n2: Steam Enhanced\n3: Steam Air")
+            skin_id_input = int(raw_input("Please enter the skin number : "))
+        except ValueError:
+            print "Your selection is invalid"
+            continue
+        else:
+            break
 
-    # while True:
-    #     try:
-    #         print("1: Steam Compact\n2: Steam Enhanced\n3: Steam Air")
-    #         skin_id = int(raw_input("Please enter the skin number : "))
-    #     except ValueError:
-    #         print "Your selection is invalid"
-    #         continue
-    #     else:
-    #         print("Downloading skin ID : %s") % skin_id
-    #         break
-    #
-    # return skin_id
+    skin_id = skin_id_input
 
 #Main function
 def main():
+
 
      create_skin_objets()
      find_steam_path()

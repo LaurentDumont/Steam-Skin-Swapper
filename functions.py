@@ -24,6 +24,23 @@ class skin:
         self.skin_archive_name = skin_archive_name
 
 
+def reset_skin_selection():
+
+    user_name = getpass.getuser()
+    sid = win32security.LookupAccountName(None, user_name)[0]
+    sidstr = win32security.ConvertSidToStringSid(sid)
+
+    connectRegistry = ConnectRegistry(None, HKEY_USERS)
+    skin_key = OpenKey(connectRegistry, sidstr + "\Software\Valve\Steam", 0, KEY_WRITE)
+    try:
+        SetValueEx(skin_key, 'SkinV4', 0, REG_SZ, "")
+    except EnvironmentError:
+        print "Cannot change Registry key"
+
+    CloseKey(connectRegistry)
+    CloseKey(skin_key)
+
+
 #Download the skin @skin_array
 def download_skin(skins_array,skin_id):
 
@@ -33,6 +50,8 @@ def download_skin(skins_array,skin_id):
         index = 1
     if skin_id == 3:
         index = 2
+    if skin_id == 4:
+        index = 3
 
     if find_steam_path() == 'w7':
         SKIN_PATH = "C:\\Program Files (x86)\\Steam\\skins"
@@ -79,7 +98,8 @@ def edit_selected_skin(skins_array, skin_id):
         index = 1
     if skin_id == 3:
         index = 2
-
+    if skin_id == 4:
+        index = 3
 
     user_name = getpass.getuser()
     sid = win32security.LookupAccountName(None, user_name)[0]
@@ -139,10 +159,13 @@ def create_skin_objets():
     steamEnhanced = skin("http://sss.coldnorthadmin.com/skins/enhanced/enhanced.zip", "enhanced", "enhanced.zip")
     #2
     steamAir = skin("http://sss.coldnorthadmin.com/skins/air/air.zip", "air", "air.zip")
+    #3
+    steamMetro = skin("http://sss.coldnorthadmin.com/skins/metro/metro.zip", "metro", "metro.zip")
 
     skin_list.append(steamCompact)
     skin_list.append(steamEnhanced)
     skin_list.append(steamAir)
+    skin_list.append(steamMetro)
 
 
 def prompt_skin_choice():
@@ -151,7 +174,7 @@ def prompt_skin_choice():
 
     while True:
         try:
-            print("1: Steam Compact\n2: Steam Enhanced\n3: Steam Air")
+            print("1: Steam Compact\n2: Steam Enhanced\n3: Steam Air\n4: Steam Metro\n99: Reset default Steam skin")
             skin_id_input = int(raw_input("Please enter the skin number : "))
         except ValueError:
             print "Your selection is invalid"
@@ -160,10 +183,14 @@ def prompt_skin_choice():
             break
 
     skin_id = skin_id_input
+    if skin_id == 99:
+        reset_skin_selection()
+        kill_steam_restart()
+        exit(1)
+
 
 #Main function
 def main():
-
 
      create_skin_objets()
      find_steam_path()

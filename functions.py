@@ -1,7 +1,9 @@
 __author__ = 'Laurent Dumont'
 __name__ = 'Steam Skin Swapper'
 
+#Modules needed in order to run the program
 import os
+import platform
 import psutil
 import win32security
 import urllib
@@ -11,8 +13,8 @@ import time
 import subprocess
 from _winreg import *
 
-
-#SKIN_PATH_XP = os.getenv('APPDATA')
+#Global variables
+SKIN_PATH_XP = os.getenv('APPDATA')
 STEAM_PROC_NAME = "Steam.exe"
 
 # Create a skin object with @skin_url and @skin_name
@@ -24,6 +26,15 @@ class skin:
         self.skin_archive_name = skin_archive_name
 
 
+#Get the OS type - Continue if on Windows / Exit if Mac or Linux.
+def get_os_type():
+
+    osType = platform.system()
+    if osType != 'Windows':
+        print "This program is currently only compatible with Windows"
+        exit()
+
+#Reset the skin selection back to the default ugly Steam skin.
 def reset_skin_selection():
 
     user_name = getpass.getuser()
@@ -40,8 +51,7 @@ def reset_skin_selection():
     CloseKey(connectRegistry)
     CloseKey(skin_key)
 
-
-#Download the skin @skin_array
+#Download the skin @skin_array.
 def download_skin(skins_array,skin_id):
 
     if skin_id == 1:
@@ -89,7 +99,7 @@ def find_steam_path():
 
     return win_ver
 
-#
+#Change the selected skin in the registry.
 def edit_selected_skin(skins_array, skin_id):
 
     if skin_id == 1:
@@ -115,7 +125,7 @@ def edit_selected_skin(skins_array, skin_id):
     CloseKey(connectRegistry)
     CloseKey(skin_key)
 
-
+#Kill and restart the Steam process.
 def kill_steam_restart():
 
 
@@ -143,7 +153,7 @@ def kill_steam_restart():
     subprocess.Popen(steam_path)
     exit(1)
 
-
+#Create the skin objects.
 def create_skin_objets():
 
     #Create the global variables containing the skins.
@@ -167,7 +177,7 @@ def create_skin_objets():
     skin_list.append(steamAir)
     skin_list.append(steamMetro)
 
-
+#Create the prompt and check choice selection.
 def prompt_skin_choice():
 
     global skin_id
@@ -187,7 +197,6 @@ def prompt_skin_choice():
         reset_skin_selection()
         kill_steam_restart()
         exit(1)
-
 
 #Main function
 def main():

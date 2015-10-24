@@ -25,7 +25,6 @@ class skin:
         self.skin_name = skin_name
         self.skin_archive_name = skin_archive_name
 
-
 #Get the OS type - Continue if on Windows / Exit if Mac or Linux.
 def get_os_type():
 
@@ -75,6 +74,7 @@ def download_skin(skins_array,skin_id):
         if not os.path.exists(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name):
             os.makedirs(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
             skin_archive.extractall(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
+            os.remove("metro")
 
     # for skin in skins_array:
     #     print "Downloading Skin " + skin.skin_name

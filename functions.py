@@ -74,7 +74,11 @@ def download_skin(skins_array,skin_id):
         if not os.path.exists(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name):
             os.makedirs(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
             skin_archive.extractall(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
-            os.remove("metro")
+            try:
+                print('Removing the metro file')
+                os.remove("E:\Projects\Steam-Skin-Swapper\metro")
+            except (OSError):
+                print('Cannot remove the file')
 
     # for skin in skins_array:
     #     print "Downloading Skin " + skin.skin_name

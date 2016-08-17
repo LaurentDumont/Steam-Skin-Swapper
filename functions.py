@@ -1,7 +1,7 @@
 __author__ = 'Laurent Dumont'
 __name__ = 'Steam Skin Swapper'
 
-#Modules needed in order to run the program
+# Modules needed in order to run the program
 import os
 import platform
 import psutil
@@ -13,29 +13,29 @@ import time
 import subprocess
 from _winreg import *
 
-#Global variables
+# Global variables
 SKIN_PATH_XP = os.getenv('APPDATA')
 STEAM_PROC_NAME = "Steam.exe"
 
+
 # Create a skin object with @skin_url and @skin_name
 class skin:
-
     def __init__(self, skin_url, skin_name, skin_archive_name):
         self.skin_url = skin_url
         self.skin_name = skin_name
         self.skin_archive_name = skin_archive_name
 
-#Get the OS type - Continue if on Windows / Exit if Mac or Linux.
-def get_os_type():
 
+# Get the OS type - Continue if on Windows / Exit if Mac or Linux.
+def get_os_type():
     osType = platform.system()
     if osType != 'Windows':
         print "This program is currently only compatible with Windows"
         exit()
 
-#Reset the skin selection back to the default ugly Steam skin.
-def reset_skin_selection():
 
+# Reset the skin selection back to the default ugly Steam skin.
+def reset_skin_selection():
     user_name = getpass.getuser()
     sid = win32security.LookupAccountName(None, user_name)[0]
     sidstr = win32security.ConvertSidToStringSid(sid)
@@ -50,16 +50,16 @@ def reset_skin_selection():
     CloseKey(connectRegistry)
     CloseKey(skin_key)
 
-#Download the skin @skin_array.
-def download_skin(skins_array,skin_id):
 
+# Download the skin @skin_array.
+def download_skin(skins_array, skin_id):
     if skin_id == 1:
         index = 0
-    if skin_id == 2:
+    elif skin_id == 2:
         index = 1
-    if skin_id == 3:
+    elif skin_id == 3:
         index = 2
-    if skin_id == 4:
+    elif skin_id == 4:
         index = 3
 
     if find_steam_path() == 'w7':
@@ -74,23 +74,22 @@ def download_skin(skins_array,skin_id):
         if not os.path.exists(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name):
             os.makedirs(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
             skin_archive.extractall(SKIN_PATH + "\\" + "\\" + skins_array[index].skin_name)
-            try:
-                print('Removing the metro file')
-                os.remove("E:\Projects\Steam-Skin-Swapper\metro")
-            except (OSError):
-                print('Cannot remove the file')
+        skin_archive.close()
+        os.remove(skins_array[index].skin_name)
 
-    # for skin in skins_array:
-    #     print "Downloading Skin " + skin.skin_name
-    #     urllib.urlretrieve(skin.skin_url, skin.skin_name)
-    #     with zipfile.ZipFile(skin.skin_name, "r") as skin_archive:
-    #         if not os.path.exists(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name):
-    #             os.makedirs(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
-    #         skin_archive.extractall(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
 
-#Find the Steam folder path depending on the version of Windows.
+        # for skin in skins_array:
+        #     print "Downloading Skin a
+        # " + skin.skin_name
+        #     urllib.urlretrieve(skin.skin_url, skin.skin_name)
+        #     with zipfile.ZipFile(skin.skin_name, "r") as skin_archive:
+        #         if not os.path.exists(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name):
+        #             os.makedirs(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
+        #         skin_archive.extractall(SKIN_PATH + "\\" + "SteamSkins" + "\\" + skin.skin_name)
+
+
+# Find the Steam folder path depending on the version of Windows.
 def find_steam_path():
-
     w7_path = "C:\\Program Files (x86)\\Steam\\skins"
     xp_path = "C:\\Program Files\\Steam\skins"
     global win_ver
@@ -103,16 +102,16 @@ def find_steam_path():
 
     return win_ver
 
-#Change the selected skin in the registry.
-def edit_selected_skin(skins_array, skin_id):
 
+# Change the selected skin in the registry.
+def edit_selected_skin(skins_array, skin_id):
     if skin_id == 1:
         index = 0
-    if skin_id == 2:
+    elif skin_id == 2:
         index = 1
-    if skin_id == 3:
+    elif skin_id == 3:
         index = 2
-    if skin_id == 4:
+    elif skin_id == 4:
         index = 3
 
     user_name = getpass.getuser()
@@ -129,10 +128,9 @@ def edit_selected_skin(skins_array, skin_id):
     CloseKey(connectRegistry)
     CloseKey(skin_key)
 
-#Kill and restart the Steam process.
+
+# Kill and restart the Steam process.
 def kill_steam_restart():
-
-
     for process in psutil.process_iter():
         try:
             if process.name() == STEAM_PROC_NAME:
@@ -157,23 +155,23 @@ def kill_steam_restart():
     subprocess.Popen(steam_path)
     exit(1)
 
-#Create the skin objects.
-def create_skin_objets():
 
-    #Create the global variables containing the skins.
+# Create the skin objects.
+def create_skin_objets():
+    # Create the global variables containing the skins.
     global steamCompact
     global steamEnhanced
     global steamAir
     global skin_list
 
     skin_list = []
-    #0
+    # 0
     steamCompact = skin("http://sss.coldnorthadmin.com/skins/compact/compact.zip", "compact", "compact.zip")
-    #1
+    # 1
     steamEnhanced = skin("http://sss.coldnorthadmin.com/skins/enhanced/enhanced.zip", "enhanced", "enhanced.zip")
-    #2
+    # 2
     steamAir = skin("http://sss.coldnorthadmin.com/skins/air/air.zip", "air", "air.zip")
-    #3
+    # 3
     steamMetro = skin("http://sss.coldnorthadmin.com/skins/metro/metro.zip", "metro", "metro.zip")
 
     skin_list.append(steamCompact)
@@ -181,9 +179,9 @@ def create_skin_objets():
     skin_list.append(steamAir)
     skin_list.append(steamMetro)
 
-#Create the prompt and check choice selection.
-def prompt_skin_choice():
 
+# Create the prompt and check choice selection.
+def prompt_skin_choice(skin_list):
     global skin_id
 
     while True:
@@ -193,6 +191,8 @@ def prompt_skin_choice():
         except ValueError:
             print "Your selection is invalid"
             continue
+        if skin_id_input > len(skin_list):
+            print "Your selection is invalid"
         else:
             break
 
@@ -202,15 +202,16 @@ def prompt_skin_choice():
         kill_steam_restart()
         exit(1)
 
-#Main function
+
+# Main function
 def main():
+    create_skin_objets()
+    find_steam_path()
+    prompt_skin_choice(skin_list)
+    download_skin(skin_list, skin_id)
+    edit_selected_skin(skin_list, skin_id)
+    kill_steam_restart()
 
-     create_skin_objets()
-     find_steam_path()
-     prompt_skin_choice()
-     download_skin(skin_list, skin_id)
-     edit_selected_skin(skin_list, skin_id)
-     kill_steam_restart()
 
-#MAIN PROCESS
+# MAIN PROCESS
 main()
